@@ -46,7 +46,3 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
-
-# Local nested repository.
-# Remove this rule if you delete client/.git and want client tracked by this repo.
-client/
