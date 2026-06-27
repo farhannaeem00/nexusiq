@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-const express    = require('express');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const connectDB  = require('./config/db');
+const express   = require('express');
+const cors      = require('cors');
+const helmet    = require('helmet');
+const connectDB = require('./config/db');
 const authRoutes      = require('./routes/auth');
 const datasetRoutes   = require('./routes/datasets');
 const dashboardRoutes = require('./routes/dashboards');
@@ -20,19 +20,13 @@ app.use(helmet({
 
 // ── CORS ──────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    process.env.CLIENT_URL,
-    'https://nexusiqclient.vercel.app',
-  ],
+  origin: '*',
   methods:        ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials:    true,
+  credentials:    false,
 }));
 
 app.options('*', cors());
-
 
 // ── Body Parser ───────────────────────────────────────
 app.use(express.json({ limit: '50mb' }));
@@ -54,13 +48,16 @@ app.use('/api/dashboards', dashboardRoutes);
 // ── Error Handler ─────────────────────────────────────
 app.use(errorHandler);
 
-// ── Start Server ──────────────────────────────────────
-const PORT = process.env.PORT || 5000;
-
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 NexusIQ server running on http://localhost:${PORT}`);
+// ── Start Server (local only) ─────────────────────────
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 NexusIQ server running on http://localhost:${PORT}`);
+    });
   });
-});
+} else {
+  connectDB();
+}
 
-module.exports = app;   
+module.exports = app;
